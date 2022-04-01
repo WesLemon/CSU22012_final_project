@@ -5,11 +5,12 @@ import java.util.Scanner;
 
 public class HelloWorld {
 
-    private static final ArrayList<Integer> stopIDs = new ArrayList<Integer>();
-    private static final ArrayList<String> stopNames = new ArrayList<String>();
-    private static final ArrayList<String> stopTimes = new ArrayList<String>();
-    private static final ArrayList<String> stops = new ArrayList<String>();
-    private static final ArrayList<String> trips = new ArrayList<String>();
+    private static final ArrayList<Integer> stopIDs = new ArrayList<>();
+    private static final ArrayList<String> stopNames = new ArrayList<>();
+    private static final ArrayList<String> stopTimes = new ArrayList<>();
+    private static final ArrayList<String> stops = new ArrayList<>();
+    private static final ArrayList<String> trips = new ArrayList<>();
+
 
     public static void main(String[] args) {
         System.out.println("Hello world.");
@@ -18,7 +19,7 @@ public class HelloWorld {
         String stopTimesPath = "stop_times.txt";
         String transfersPath = "transfers.txt";
 
-        Scanner lineScanner = null;
+        Scanner lineScanner;
 
         try {
             Scanner inFile = new Scanner(new File(stopsPath));
