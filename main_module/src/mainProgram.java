@@ -130,6 +130,11 @@ public class mainProgram {
                 if (lineScanner.hasNext()) {
                     lineScanner.next();
                     String tempTime = lineScanner.next();
+                    if(tempTime.startsWith("24") || tempTime.startsWith("25") || tempTime.startsWith("26")
+                        || tempTime.startsWith("27") || tempTime.startsWith("28") || tempTime.startsWith("29")) {
+                        System.out.println("Invalid time entered.");
+                        return;
+                    }
                     if (tempTime.startsWith(" ")) {
                         tempTime = tempTime.substring(1);
                     }
