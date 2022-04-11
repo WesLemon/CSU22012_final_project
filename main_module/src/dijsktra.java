@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 public class dijsktra {
 
+    public static int numStops = 0;
     private static int[][] adjacencyMatrix;
-    private static int numStops = 0;
 
     dijsktra(String stopsFile, String transfersFile, String stopTimesFile) {
 
@@ -13,7 +13,7 @@ public class dijsktra {
         setNumStops(stopsFile);
 
         // Initialising the adjacency matrix
-        adjacencyMatrix = new int[numStops +1][numStops +1];
+        adjacencyMatrix = new int[numStops + 1][numStops + 1];
         for (int i = 0; i < numStops; i++) {
             for (int j = 0; j < numStops; j++) {
                 adjacencyMatrix[i][j] = Integer.MAX_VALUE;
@@ -30,19 +30,20 @@ public class dijsktra {
         try {
             inFile = new Scanner(new File(stopsFile));
             inFile.useDelimiter(",");
-            if(inFile.hasNextLine()) {
+            if (inFile.hasNextLine()) {
                 inFile.nextLine();
             }
-            while(inFile.hasNextLine()) {
+            while (inFile.hasNextLine()) {
                 int temp = -1;
-                if(inFile.hasNextInt()) {
+                if (inFile.hasNextInt()) {
                     temp = inFile.nextInt();
                 }
-                if(temp > numStops) {
+                if (temp > numStops) {
                     numStops = temp;
                 }
                 inFile.nextLine();
             }
+            numStops++;
         } catch (NullPointerException | FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -59,12 +60,12 @@ public class dijsktra {
             inFile.next();
             int currentStop = inFile.nextInt();
             inFile.nextLine();
-            while(inFile.hasNextLine()) {
+            while (inFile.hasNextLine()) {
                 int newTripID = inFile.nextInt();
                 inFile.next();
                 inFile.next();
                 int newStop = inFile.nextInt();
-                if(currentTripID == newTripID) {
+                if (currentTripID == newTripID) {
                     adjacencyMatrix[currentStop][newStop] = 1;
                 }
                 currentStop = newStop;
@@ -83,18 +84,17 @@ public class dijsktra {
             inFile.useDelimiter("[,\\n]");
             inFile.nextLine();
 
-            while(inFile.hasNextLine()) {
+            while (inFile.hasNextLine()) {
                 int startStop = inFile.nextInt();
                 int destStop = inFile.nextInt();
                 int check = inFile.nextInt();
-                if(check == 0) {
+                if (check == 0) {
                     adjacencyMatrix[startStop][destStop] = 2;
-                }
-                else if(check == 2) {
+                } else if (check == 2) {
                     // Error checking in case there are stops with transfer tiles that have already been given a value
                     // between them because they come after one another on a bus route.
                     int temp = inFile.nextInt();
-                    if(temp < adjacencyMatrix[startStop][destStop]) {
+                    if (temp < adjacencyMatrix[startStop][destStop]) {
                         adjacencyMatrix[startStop][destStop] = temp;
                     }
                 }
@@ -105,7 +105,7 @@ public class dijsktra {
         }
     }
 
-    private int shortestPath(int stop1, int stop2) {
+    public int shortestPath(int stop1, int stop2) {
 
         int[] distTo = new int[numStops];
         boolean[] visited = new boolean[numStops];
@@ -120,18 +120,20 @@ public class dijsktra {
         parents[stop1] = -1; // Because the starting stop has no parent.
 
         // Get the shortest paths from source to each vertex.
-        for (int i = 0; i < numStops-1; i++) {
+        for (int i = 0; i < numStops - 1; i++) {
             int vertex1 = minDistance(distTo, visited);
             visited[vertex1] = true;
             for (int vertex2 = 0; vertex2 < numStops; vertex2++) {
-                if(adjacencyMatrix[vertex1][vertex2] != Integer.MAX_VALUE && !visited[vertex2] && distTo[vertex1] != Integer.MAX_VALUE
+                if (adjacencyMatrix[vertex1][vertex2] != Integer.MAX_VALUE && !visited[vertex2] && distTo[vertex1] != Integer.MAX_VALUE
                         && distTo[vertex1] + adjacencyMatrix[vertex1][vertex2] < distTo[vertex2]) {
                     distTo[vertex2] = distTo[vertex1] + adjacencyMatrix[vertex1][vertex2];
                     parents[vertex2] = vertex1;
                 }
             }
         }
-        printPath(parents, stop2, stop2);
+        if (distTo[stop2] != Integer.MAX_VALUE) {
+            printPath(parents, stop2, stop2);
+        }
         return distTo[stop2];
     }
 
@@ -141,8 +143,7 @@ public class dijsktra {
         int min_index = 0;
 
         for (int i = 0; i < numStops; i++) {
-            if(!visited[i] && distTo[i] < min)
-            {
+            if (!visited[i] && distTo[i] < min) {
                 min = distTo[i];
                 min_index = i;
             }
@@ -150,24 +151,15 @@ public class dijsktra {
         return min_index;
     }
 
-    private void printPath(int[] parents , int vertex, int child) {
-        if(vertex == -1) {
+    private void printPath(int[] parents, int vertex, int child) {
+        if (vertex == -1) {
             return;
         }
         printPath(parents, parents[vertex], vertex);
-        if(vertex == child) {
+        if (vertex == child) {
             System.out.println(vertex);
-        }
-        else{
+        } else {
             System.out.print(vertex + " -> ");
         }
-    }
-
-    public static void main(String[] args) {
-        dijsktra test = new dijsktra("stops.txt", "transfers.txt", "stop_times.txt");
-        int testStop1 = 1276;
-        int testStop2 = 122;
-        int dist = test.shortestPath(testStop1, testStop2);
-        System.out.println("Dist from 1276 to 122 is: " + dist);
     }
 }
